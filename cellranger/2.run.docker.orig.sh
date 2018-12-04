@@ -6,7 +6,7 @@ DOCKER_ID=uwadt
 # pull (1st time only, if not already in machine)
 docker pull $DOCKER_ID/cellranger:3.0.0
 
-# run cellranger, assuming directory structure as in "dirstruc" file
+# run cellranger, assuming directory structure as in "dirstruc-example" file
 cd test1
 docker run --rm \
 	-v $(pwd)/..:/data -w /data/$(basename $(pwd)) \
