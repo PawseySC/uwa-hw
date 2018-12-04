@@ -1,0 +1,8 @@
+Once you have launched the container as a daemon (commands 2 or 3),
+you can access the Shiny server from your web browser.
+
+- If running the container locally
+http://localhost:3838
+
+- If running on a cloud service or similar
+http://<IP-OF-MACHINE>:3838

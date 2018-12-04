@@ -1,0 +1,45 @@
+-rw-rw----+ 1 mdelapierre pawsey0001  7086786560 Nov 15 08:34 neuron_1k_v3_fastqs.tar
+-rw-rw----+ 1 mdelapierre pawsey0001 10293895102 Nov 14 03:29 refdata-cellranger-mm10-3.0.0.tar.gz
+
+neuron_1k_v3_fastqs:
+total 6920716
+-rw-r-----+ 1 mdelapierre pawsey0001  310666580 Nov  3 03:02 neuron_1k_v3_S1_L001_I1_001.fastq.gz
+-rw-r-----+ 1 mdelapierre pawsey0001  959240407 Nov  3 03:02 neuron_1k_v3_S1_L001_R1_001.fastq.gz
+-rw-r-----+ 1 mdelapierre pawsey0001 2277006069 Nov  3 03:02 neuron_1k_v3_S1_L001_R2_001.fastq.gz
+-rw-r-----+ 1 mdelapierre pawsey0001  310686387 Nov  3 03:02 neuron_1k_v3_S1_L002_I1_001.fastq.gz
+-rw-r-----+ 1 mdelapierre pawsey0001  960751583 Nov  3 03:02 neuron_1k_v3_S1_L002_R1_001.fastq.gz
+-rw-r-----+ 1 mdelapierre pawsey0001 2268428347 Nov  3 03:02 neuron_1k_v3_S1_L002_R2_001.fastq.gz
+
+refdata-cellranger-mm10-3.0.0:
+total 20
+drwxr-s---+ 2 mdelapierre pawsey0001 4096 Nov  7 05:30 fasta
+drwxr-s---+ 2 mdelapierre pawsey0001 4096 Nov  7 05:30 genes
+drwxr-s---+ 2 mdelapierre pawsey0001 4096 Nov  7 05:30 pickle
+-rw-r-----+ 1 mdelapierre pawsey0001  422 Nov  7 05:30 reference.json
+drwxr-s---+ 2 mdelapierre pawsey0001 4096 Nov  7 05:40 star
+
+test1:
+total 308
+-rw-rw----+ 1 mdelapierre pawsey0001   381 Nov 22 13:33 job_mod1.sh
+-rw-rw----+ 1 mdelapierre pawsey0001   480 Nov 22 15:54 job_mod2.sh
+-rw-rw----+ 1 mdelapierre pawsey0001   479 Nov 22 12:35 job_orig.sh
+lrwxrwxrwx  1 mdelapierre pawsey0001    32 Nov 22 12:17 mm10 -> ../refdata-cellranger-mm10-3.0.0
+drwxrws---+ 4 mdelapierre pawsey0001  4096 Nov 22 15:42 mod1
+-rw-rw----+ 1 mdelapierre pawsey0001 60273 Nov 22 15:42 mod1_slurm-2700949.out
+drwxrws---+ 4 mdelapierre pawsey0001  4096 Nov 22 17:28 mod2
+-rw-rw----+ 1 mdelapierre pawsey0001 18416 Nov 22 16:10 mod2_chnk00_Log.out
+lrwxrwxrwx  1 mdelapierre pawsey0001    59 Nov 22 12:17 neuron_1k_v3_S1_L001_I1_001.fastq.gz -> ../neuron_1k_v3_fastqs/neuron_1k_v3_S1_L001_I1_001.fastq.gz
+lrwxrwxrwx  1 mdelapierre pawsey0001    59 Nov 22 12:17 neuron_1k_v3_S1_L001_R1_001.fastq.gz -> ../neuron_1k_v3_fastqs/neuron_1k_v3_S1_L001_R1_001.fastq.gz
+lrwxrwxrwx  1 mdelapierre pawsey0001    59 Nov 22 12:17 neuron_1k_v3_S1_L001_R2_001.fastq.gz -> ../neuron_1k_v3_fastqs/neuron_1k_v3_S1_L001_R2_001.fastq.gz
+lrwxrwxrwx  1 mdelapierre pawsey0001    59 Nov 22 12:17 neuron_1k_v3_S1_L002_I1_001.fastq.gz -> ../neuron_1k_v3_fastqs/neuron_1k_v3_S1_L002_I1_001.fastq.gz
+lrwxrwxrwx  1 mdelapierre pawsey0001    59 Nov 22 12:17 neuron_1k_v3_S1_L002_R1_001.fastq.gz -> ../neuron_1k_v3_fastqs/neuron_1k_v3_S1_L002_R1_001.fastq.gz
+lrwxrwxrwx  1 mdelapierre pawsey0001    59 Nov 22 12:17 neuron_1k_v3_S1_L002_R2_001.fastq.gz -> ../neuron_1k_v3_fastqs/neuron_1k_v3_S1_L002_R2_001.fastq.gz
+drwxrws---+ 4 mdelapierre pawsey0001  4096 Nov 22 14:09 orig
+-rw-rw----+ 1 mdelapierre pawsey0001 60277 Nov 22 14:06 orig_slurm-2700679.out
+-rw-rw----+ 1 mdelapierre pawsey0001   482 Nov 22 13:44 reference_3.0.0_mod1.patch
+-rwxr--r--  1 mdelapierre pawsey0001 26812 Nov 22 13:30 reference_3.0.0_mod1.py
+-rwxr--r--  1 mdelapierre pawsey0001 26748 Nov 14 01:28 reference_3.0.0_orig.py
+-rw-rw----+ 1 mdelapierre pawsey0001 60135 Nov 22 17:28 slurm-2701192.out
+drwxrws---+ 2 mdelapierre pawsey0001  4096 Nov 22 15:05 t2
+drwxrws---+ 2 mdelapierre pawsey0001  4096 Nov 22 13:35 test_wrap
+-rw-rw----+ 1 mdelapierre pawsey0001   235 Nov 22 13:34 wrap_mod1.sh

@@ -1,0 +1,12 @@
+--- reference_3.0.0_orig.py	2018-11-14 01:28:37.000000000 +0800
++++ reference_3.0.0_mod1.py	2018-11-22 13:30:12.000000000 +0800
+@@ -548,6 +548,9 @@
+             if read2_fastq_fn:
+                 args.append(read2_fastq_fn)
+ 
++        args.append('--runRNGseed')
++        args.append('888')
++
+         if out_genome_bam_fn == cr_constants.BAM_FILE_STREAM:
+             # stream to pipe for downstream processing
+             # NOTE: this feature is unused in the standard pipeline

@@ -1,0 +1,7 @@
+Notes on cellranger source code:
+
+ref dir in Brian's container: /opt/cellranger-2.2.0/cellranger-cs/2.2.0
+bin/count  ## gets input pars
+[...]
+mro/stages/counter/align_reads/__init__.py  ## defines star object
+lib/python/cellranger/reference.py  ## runs STAR (arguments actually used)

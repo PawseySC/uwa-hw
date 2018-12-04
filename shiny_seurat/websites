@@ -1,0 +1,8 @@
+On Docker Hub
+https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=rocker%2Fshiny&starCount=0
+
+Some Rocker wiki
+https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image
+
+HTTPS template - uses docker-compose and NGINX
+https://github.com/PawseySC/rstudio-nginx
