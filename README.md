@@ -1,5 +1,5 @@
 # Uptake Prokect 18 - DPIRD
-## Marco De La Pierre
+## Marco De La Pierre, Brian Skjerven
 ## Hayden Walker, Dave Tang
 
 This is a project for setting up a container deployment of 
