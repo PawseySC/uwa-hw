@@ -1,0 +1,30 @@
+@include "sc_rna_counter_cs.mro"
+
+call SC_RNA_COUNTER_CS(
+    sample_id = "my_test2",
+    sample_def = [ 
+            {
+                "fastq_mode": "ILMN_BCL2FASTQ",
+                "gem_group": null,
+                "lanes": null,
+                "read_path": "/group/pawsey0001/mdelapierre/pup2018/hayden/cellranger/test1",
+                "sample_indices": [ "any" ],
+                "sample_names": [ "neuron_1k_v3" ]
+            }
+    ],
+    sample_desc = "",
+    reference_path = "/group/pawsey0001/mdelapierre/pup2018/hayden/cellranger/test1/mm10",
+    recovered_cells = 1000,
+    intron_min = 22,
+    intron_max = 900000,
+    score_del_open = -1,
+    score_del_base = -1,
+    score_ins_open = -1,
+    score_ins_base = -1,
+    force_cells = null,
+    no_secondary_analysis = false,
+    chemistry = "auto",
+    r1_length = null,
+    r2_length = null,
+    feature_reference = null,
+)
