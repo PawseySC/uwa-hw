@@ -1,0 +1,263 @@
+diff --git a/cellranger-cs/1.3.0/bin/count b/cellranger-cs/1.3.0/bin/count
+index 6b9e4f4..f901f62 100755
+--- a/cellranger-cs/1.3.0/bin/count
++++ b/cellranger-cs/1.3.0/bin/count
+@@ -17,6 +17,9 @@ Options:
+     --transcriptome=DIR Path of folder containing 10X-compatible transcriptome.
+     --cells=NUM         Expected number of recovered cells. Optional.
+ 
++# STAR
++  $DOCOPT_OPTIONS_STAR
++
+ # Martian Runtime
+     $DOCOPT_OPTIONS_MRP_CLUSTER
+ EOF
+@@ -66,6 +69,12 @@ call SC_RNA_COUNTER_CS(
+     sample_desc = $sample_desc,
+     reference_path = $reference_path,
+     recovered_cells = $cells,
++    intron_min = $intron_min,
++    intron_max = $intron_max,
++    score_del_open = $score_del_open,
++    score_del_base = $score_del_base,
++    score_ins_open = $score_ins_open,
++    score_ins_base = $score_ins_base,
+ )
+ EOF
+ }
+diff --git a/cellranger-cs/1.3.0/lib/python/cellranger/reference.py b/cellranger-cs/1.3.0/lib/python/cellranger/reference.py
+index c3ab718..5d965d4 100644
+--- a/cellranger-cs/1.3.0/lib/python/cellranger/reference.py
++++ b/cellranger-cs/1.3.0/lib/python/cellranger/reference.py
+@@ -652,6 +652,9 @@ class STAR:
+               out_genome_bam_fn, out_transcriptome_bam_fn,
+               threads, cwd=None,
+               max_report_alignments_per_read=-1,
++              intron_min=20, intron_max=1000000,
++              score_del_open=-2, score_del_base=-2,
++              score_ins_open=-2, score_ins_base=-2,
+               read_group_tags=None):
+         if cwd is None:
+             cwd = os.getcwd()
+@@ -672,6 +675,12 @@ class STAR:
+                 '--outSAMmultNmax', str(max_report_alignments_per_read),
+                 '--runThreadN', str(threads),
+                 '--readNameSeparator', 'space',
++                '--alignIntronMin', str(intron_min),
++                '--alignIntronMax', str(intron_max),
++                '--scoreDelOpen', str(score_del_open),
++                '--scoreDelBase', str(score_del_base),
++                '--scoreInsOpen', str(score_ins_open),
++                '--scoreInsBase', str(score_ins_base)
+             ]
+ 
+             if read_group_tags is not None:
+diff --git a/cellranger-cs/1.3.0/mro/_basic_sc_rna_counter.mro b/cellranger-cs/1.3.0/mro/_basic_sc_rna_counter.mro
+index f251ea2..709a894 100644
+--- a/cellranger-cs/1.3.0/mro/_basic_sc_rna_counter.mro
++++ b/cellranger-cs/1.3.0/mro/_basic_sc_rna_counter.mro
+@@ -21,6 +21,12 @@ pipeline _BASIC_SC_RNA_COUNTER(
+     in  map      align,
+     in  int      align_threads,
+     in  path     reference_path,
++    in  int      intron_min,
++    in  int      intron_max,
++    in  int      score_del_open,
++    in  int      score_del_base,
++    in  int      score_ins_open,
++    in  int      score_ins_base,
+     in  int      recovered_cells,
+     in  json     cell_barcodes                  "Cell barcode override",
+     in  bool     correct_barcodes,
+@@ -47,6 +53,12 @@ pipeline _BASIC_SC_RNA_COUNTER(
+         reference_path    = self.reference_path,
+         threads           = self.align_threads,
+         max_hits_per_read = -1,
++	intron_min        = self.intron_min,
++	intron_max        = self.intron_max,
++	score_del_open    = self.score_del_open,
++	score_del_base    = self.score_del_base,
++	score_ins_open    = self.score_ins_open,
++	score_ins_base    = self.score_ins_base,
+     )
+ 
+     call volatile SORT_BY_QNAME(
+diff --git a/cellranger-cs/1.3.0/mro/_basic_sc_rna_counter_stages.mro b/cellranger-cs/1.3.0/mro/_basic_sc_rna_counter_stages.mro
+index 86ca98b..d6a3f6c 100644
+--- a/cellranger-cs/1.3.0/mro/_basic_sc_rna_counter_stages.mro
++++ b/cellranger-cs/1.3.0/mro/_basic_sc_rna_counter_stages.mro
+@@ -16,6 +16,12 @@ stage ALIGN_READS(
+     in  path     reference_path,
+     in  int      threads,
+     in  int      max_hits_per_read,
++    in  int      intron_min,
++    in  int      intron_max,
++    in  int      score_del_open,
++    in  int      score_del_base,
++    in  int      score_ins_open,
++    in  int      score_ins_base,
+     out bam[]    genome_output,
+     out bam[]    transcriptome_output,
+     src py       "stages/counter/align_reads",
+diff --git a/cellranger-cs/1.3.0/mro/sc_rna_counter.mro b/cellranger-cs/1.3.0/mro/sc_rna_counter.mro
+index f6415dd..b1d50e3 100644
+--- a/cellranger-cs/1.3.0/mro/sc_rna_counter.mro
++++ b/cellranger-cs/1.3.0/mro/sc_rna_counter.mro
+@@ -15,6 +15,12 @@ pipeline SC_RNA_COUNTER(
+     in  int     umi_min_qual_threshold,
+     in  map     align,
+     in  int     align_threads,
++    in  int     intron_min,
++    in  int     intron_max,
++    in  int     score_del_open,
++    in  int     score_del_base,
++    in  int     score_ins_open,
++    in  int     score_ins_base,
+     in  path    reference_path,
+     in  map[]   primers,
+     in  int     recovered_cells,
+@@ -99,6 +105,12 @@ pipeline SC_RNA_COUNTER(
+         cell_barcodes                = null,
+         correct_barcodes             = true,
+         rescue_multimappers          = true,
++	intron_min                   = self.intron_min,
++	intron_max                   = self.intron_max,
++	score_del_open               = self.score_del_open,
++	score_del_base               = self.score_del_base,
++	score_ins_open               = self.score_ins_open,
++	score_ins_base               = self.score_ins_base,
+     )
+ 
+     call SC_RNA_ANALYZER(
+diff --git a/cellranger-cs/1.3.0/mro/sc_rna_counter_cs.mro b/cellranger-cs/1.3.0/mro/sc_rna_counter_cs.mro
+index 416bbe5..00cd39a 100644
+--- a/cellranger-cs/1.3.0/mro/sc_rna_counter_cs.mro
++++ b/cellranger-cs/1.3.0/mro/sc_rna_counter_cs.mro
+@@ -10,6 +10,12 @@ pipeline SC_RNA_COUNTER_CS(
+     in  string  sample_desc,
+     in  path    reference_path,
+     in  int     recovered_cells,
++    in  int     intron_min,
++    in  int     intron_max,
++    in  int     score_del_open,
++    in  int     score_del_base,
++    in  int     score_ins_open,
++    in  int     score_ins_base,
+     out html    web_summary                   "Run summary HTML",
+     out csv     metrics_summary               "Run summary CSV",
+     out bam     possorted_genome_bam          "BAM"                                    "possorted_genome_bam.bam",
+@@ -33,6 +39,12 @@ pipeline SC_RNA_COUNTER_CS(
+         umi_min_qual_threshold       = 10,
+         align                        = {"aligner":"star","high_conf_mapq":null},
+         align_threads                = 4,
++	intron_min                   = self.intron_min,
++	intron_max                   = self.intron_max,
++	score_del_open               = self.score_del_open,
++	score_del_base               = self.score_del_base,
++	score_ins_open               = self.score_ins_open,
++	score_ins_base               = self.score_ins_base,
+         reference_path               = self.reference_path,
+         primers                      = [{"name":"P5","seq":"AATGATACGGCGACCACCGAGATCT"},{"name":"P7","seq":"CAAGCAGAAGACGGCATACGAGAT"},{"name":"R1","seq":"ACACTCTTTCCCTACACGACG"},{"name":"R2","seq":"GTGACTGGAGTTCAGACGTGTG"},{"name":"switch_oligo","seq":"AAGCAGTGGTATCAACGCAGAGTACATGGG"},{"name":"polyA","seq":"AAAAAAAAAAAAAAAAAAAA"}],
+         recovered_cells              = self.recovered_cells,
+diff --git a/cellranger-cs/1.3.0/mro/stages/counter/align_reads/__init__.py b/cellranger-cs/1.3.0/mro/stages/counter/align_reads/__init__.py
+index 1eb9ff5..1f10bee 100644
+--- a/cellranger-cs/1.3.0/mro/stages/counter/align_reads/__init__.py
++++ b/cellranger-cs/1.3.0/mro/stages/counter/align_reads/__init__.py
+@@ -15,6 +15,12 @@ stage ALIGN_READS(
+     in  path     reference_path,
+     in  int      threads,
+     in  int      max_hits_per_read,
++    in  int      intron_min,
++    in  int      intron_max,
++    in  int      score_del_open,
++    in  int      score_del_base,
++    in  int      score_ins_open,
++    in  int      score_ins_base,
+     out bam[]    genome_output,
+     out bam[]    transcriptome_output,
+     src py       "stages/counter/align_reads",
+@@ -52,4 +58,11 @@ def main(args, outs):
+                outs.genome_output, outs.transcriptome_output,
+                max_report_alignments_per_read=args.max_hits_per_read,
+                threads=args.threads,
+-               read_group_tags=tk_bam.make_star_rg_header(args.read_group))
++               read_group_tags=tk_bam.make_star_rg_header(args.read_group),
++               intron_min=args.intron_min,
++               intron_max=args.intron_max,
++               score_del_open=args.score_del_open,
++               score_del_base=args.score_del_base,
++               score_ins_open=args.score_ins_open,
++               score_ins_base=args.score_ins_base
++    )
+diff --git a/cellranger-cs/1.3.0/tenkit/bin/common/_includes b/cellranger-cs/1.3.0/tenkit/bin/common/_includes
+index b8724c5..0f62d16 100644
+--- a/cellranger-cs/1.3.0/tenkit/bin/common/_includes
++++ b/cellranger-cs/1.3.0/tenkit/bin/common/_includes
+@@ -84,6 +84,15 @@ read -d '' DOCOPT_OPTIONS_FASTQS <<EOF
+                             bcl2fastq-generated folder to pick FASTQs from.
+ EOF
+ 
++read -d '' DOCOPT_OPTIONS_STAR <<EOF
++    --alignIntronMin=NUM    Minimum intron length (default 20)
++    --alignIntronMax=NUM    Maximum intron length (default 1000000)
++    --scoreDelOpen=NUM      Deletion open penalty (default -2)
++    --scoreDelBase=NUM      Deletion extend penalty (default -2)
++    --scoreInsOpen=NUM      Insertion open penalty (default -2)
++    --scoreInsBase=NUM      Insertion extend penalty (default -2)
++EOF
++
+ read -d '' DOCOPT_OPTIONS_MRP_CLUSTER <<EOF
+     --jobmode=MODE      Job manager to use. Valid options:
+                             local (default), sge, lsf, or a .template file
+@@ -205,4 +214,42 @@ function process_options_fastqs {
+     else
+         lanes=null
+     fi
++
++    
++    ### Added STAR arguments ####
++    if [ -n "$alignIntronMin" ]; then
++	intron_min=$alignIntronMin
++    else
++	intron_min=20
++    fi
++
++    if [ -n "$alignIntronMax" ]; then
++	intron_max=$alignIntronMax
++    else
++	intron_max=1000000
++    fi
++
++    if [ -n "$scoreDelOpen" ]; then
++	score_del_open=$scoreDelOpen
++    else
++	score_del_open=-2
++    fi
++
++    if [ -n "$scoreDelBase" ]; then
++	score_del_base=$scoreDelBase
++    else
++	score_del_base=-2
++    fi
++
++    if [ -n "$scoreInsOpen" ]; then
++	score_ins_open=$scoreInsOpen
++    else
++	score_ins_open=-2
++    fi
++
++    if [ -n "$scoreInsBase" ]; then
++	score_ins_base=$scoreInsBase
++    else
++	score_ins_base=-2
++    fi  
+ }
+diff --git a/cr b/cr
+index e1d0da7..97f22e5 120000
+--- a/cr
++++ b/cr
+@@ -1 +1 @@
+-cellranger-cs/1.2.1/bin/cr
+\ No newline at end of file
++cellranger-cs/1.3.0/bin/cellranger
+\ No newline at end of file
